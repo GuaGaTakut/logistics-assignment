@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment Submission</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
+        h1 { text-align: center; }
+        .container { border: 1px solid #ccc; padding: 20px; border-radius: 5px; }
+        .input-group { margin-bottom: 10px; }
+        .input-group label { display: block; margin-bottom: 5px; }
+        .input-group input { width: 100%; padding: 8px; }
+        .button { width: 100%; padding: 10px; background: blue; color: white; border: none; cursor: pointer; }
+        .button:hover { background: darkblue; }
+        .submissions { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Assignment Submission</h1>
+    <div class="container">
+        <div class="input-group">
+            <label for="file">Upload File:</label>
+            <input type="file" id="file">
+        </div>
+        <div class="input-group">
+            <label for="link">Or Enter a Link:</label>
+            <input type="url" id="link" placeholder="Enter assignment link">
+        </div>
+        <button class="button" onclick="submitAssignment()">Submit</button>
+    </div>
+    <div class="submissions">
+        <h3>Submitted Assignments</h3>
+        <ul id="submission-list"></ul>
+    </div>
+
+    <script>
+        function submitAssignment() {
+            let fileInput = document.getElementById("file");
+            let linkInput = document.getElementById("link");
+            let list = document.getElementById("submission-list");
+            let listItem = document.createElement("li");
+            
+            if (fileInput.files.length > 0) {
+                listItem.textContent = "📄 " + fileInput.files[0].name;
+            } else if (linkInput.value.trim() !== "") {
+                let linkElement = document.createElement("a");
+                linkElement.href = linkInput.value;
+                linkElement.target = "_blank";
+                linkElement.textContent = "🔗 " + linkInput.value;
+                listItem.appendChild(linkElement);
+            } else {
+                alert("Please upload a file or enter a link.");
+                return;
+            }
+            
+            list.appendChild(listItem);
+            fileInput.value = "";
+            linkInput.value = "";
+        }
+    </script>
+</body>
+</html>
