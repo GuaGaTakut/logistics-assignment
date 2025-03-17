@@ -23,6 +23,7 @@ export default function AssignmentSubmission() {
 
     return (
         <div className="max-w-lg mx-auto p-4">
+            <h1> Nicholas Salim </h1>
             <Card>
                 <CardContent className="p-4">
                     <h2 className="text-xl font-bold mb-4">Submit Assignment</h2>
