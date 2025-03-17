@@ -14,6 +14,8 @@
         .button { width: 100%; padding: 10px; background: blue; color: white; border: none; cursor: pointer; }
         .button:hover { background: darkblue; }
         .submissions { margin-top: 20px; }
+        .delete-button { margin-left: 10px; padding: 5px; background: red; color: white; border: none; cursor: pointer; }
+        .delete-button:hover { background: darkred; }
     </style>
 </head>
 <body>
@@ -40,6 +42,11 @@
             let linkInput = document.getElementById("link");
             let list = document.getElementById("submission-list");
             let listItem = document.createElement("li");
+            let deleteButton = document.createElement("button");
+            
+            deleteButton.textContent = "Delete";
+            deleteButton.className = "delete-button";
+            deleteButton.onclick = function() { list.removeChild(listItem); };
             
             if (fileInput.files.length > 0) {
                 listItem.textContent = "📄 " + fileInput.files[0].name;
@@ -54,6 +61,7 @@
                 return;
             }
             
+            listItem.appendChild(deleteButton);
             list.appendChild(listItem);
             fileInput.value = "";
             linkInput.value = "";
