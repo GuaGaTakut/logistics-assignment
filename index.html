@@ -37,6 +37,8 @@
     </div>
 
     <script>
+        document.addEventListener("DOMContentLoaded", loadSubmissions);
+        
         function submitAssignment() {
             let fileInput = document.getElementById("file");
             let linkInput = document.getElementById("link");
@@ -46,7 +48,10 @@
             
             deleteButton.textContent = "Delete";
             deleteButton.className = "delete-button";
-            deleteButton.onclick = function() { list.removeChild(listItem); };
+            deleteButton.onclick = function() { 
+                list.removeChild(listItem);
+                saveSubmissions();
+            };
             
             if (fileInput.files.length > 0) {
                 listItem.textContent = "📄 " + fileInput.files[0].name;
@@ -65,6 +70,53 @@
             list.appendChild(listItem);
             fileInput.value = "";
             linkInput.value = "";
+            
+            saveSubmissions();
+        }
+
+        function saveSubmissions() {
+            let list = document.getElementById("submission-list");
+            let items = [];
+            list.childNodes.forEach(li => {
+                if (li.firstChild.tagName === "A") {
+                    items.push({ type: "link", value: li.firstChild.href });
+                } else {
+                    items.push({ type: "file", value: li.firstChild.textContent });
+                }
+            });
+            localStorage.setItem("submissions", JSON.stringify(items));
+        }
+
+        function loadSubmissions() {
+            let list = document.getElementById("submission-list");
+            let storedSubmissions = localStorage.getItem("submissions");
+            if (storedSubmissions) {
+                let items = JSON.parse(storedSubmissions);
+                items.forEach(item => {
+                    let listItem = document.createElement("li");
+                    let deleteButton = document.createElement("button");
+                    
+                    deleteButton.textContent = "Delete";
+                    deleteButton.className = "delete-button";
+                    deleteButton.onclick = function() { 
+                        list.removeChild(listItem);
+                        saveSubmissions();
+                    };
+                    
+                    if (item.type === "link") {
+                        let linkElement = document.createElement("a");
+                        linkElement.href = item.value;
+                        linkElement.target = "_blank";
+                        linkElement.textContent = "🔗 " + item.value;
+                        listItem.appendChild(linkElement);
+                    } else {
+                        listItem.textContent = "📄 " + item.value;
+                    }
+                    
+                    listItem.appendChild(deleteButton);
+                    list.appendChild(listItem);
+                });
+            }
         }
     </script>
 </body>
