@@ -1,0 +1,12 @@
+{
+  "name": "logistics-assignment",
+  "version": "1.0.0",
+  "private": true,
+  "homepage": "https://guagatakut.github.io/logistics-assignment",
+  "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
