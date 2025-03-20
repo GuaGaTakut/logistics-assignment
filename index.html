@@ -3,30 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assignment Submission</title>
+    <title>Assignment Submissions</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
-        h1 { text-align: center; }
-        .container { border: 1px solid #ccc; padding: 20px; border-radius: 5px; }
-        .input-group { margin-bottom: 10px; }
-        .input-group label { display: block; margin-bottom: 5px; }
-        .input-group input { width: 100%; padding: 8px; }
-        .button { width: 100%; padding: 10px; background: blue; color: white; border: none; cursor: pointer; }
-        .button:hover { background: darkblue; }
-        .submissions { margin-top: 20px; }
-        .delete-button { margin-left: 10px; padding: 5px; background: red; color: white; border: none; cursor: pointer; }
-        .delete-button:hover { background: darkred; }
-        
-        #submission_title {
+        body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .submissions {
+            margin-top: 20px;
+        }
+        .card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            margin-bottom: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
+        .card a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .card a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <h1>Nicholas's Assignment Submission</h1>
-    <!--copy past the card div and edit its content to make new submission-->
-    <div class="card">
-        <a href = "https://www.youtube.com" id = "submission_title"> Assignment 1</a>
+    <h1>Nicholas's Assignment Submissions</h1>
+    <div class="submissions">
+        <h2>Submitted Assignments</h2>
+        <div class="card">
+            <a href="https://www.youtube.com" id="submission_title">Assignment 1</a>
+        </div>
+        <div class="card">
+            <a href="https://example.com" id="submission_title">Assignment 2</a>
+        </div>
+        <div class="card">
+            <a href="https://anotherlink.com" id="submission_title">Assignment 3</a>
+        </div>
     </div>
 </body>
 </html>
