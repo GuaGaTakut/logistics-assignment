@@ -8,7 +8,7 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f5f5f5;
-            max-width: 800px;
+            max-width: 900px;
             margin: auto;
             padding: 20px;
         }
@@ -18,14 +18,24 @@
         }
         .submissions {
             margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
         }
         .card {
             background: white;
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-            margin-bottom: 15px;
+            width: 250px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
             transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
         }
         .card:hover {
             transform: translateY(-5px);
@@ -35,7 +45,7 @@
             text-decoration: none;
             color: #007bff;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 16px;
         }
         .card a:hover {
             text-decoration: underline;
@@ -45,17 +55,14 @@
 <body>
     <h1>Nicholas's Assignment Submissions</h1>
     <div class="submissions">
-        <h2>Submitted Assignments</h2>
-        <a href = "https://www.youtube.com">
-            <div class="card">
-                <a href="https://www.youtube.com" id="submission_title">Assignment 1</a>
-            </div>
-        </a>
-        <div class="card">
-            <a href="https://example.com" id="submission_title">Assignment 2</a>
+        <div class="card" onclick="window.location.href='https://www.youtube.com'">
+            <a href="https://www.youtube.com" target="_blank">Assignment 1</a>
         </div>
-        <div class="card">
-            <a href="https://anotherlink.com" id="submission_title">Assignment 3</a>
+        <div class="card" onclick="window.location.href='https://example.com'">
+            <a href="https://example.com" target="_blank">Assignment 2</a>
+        </div>
+        <div class="card" onclick="window.location.href='https://anotherlink.com'">
+            <a href="https://anotherlink.com" target="_blank">Assignment 3</a>
         </div>
     </div>
 </body>
