@@ -16,91 +16,16 @@
         .submissions { margin-top: 20px; }
         .delete-button { margin-left: 10px; padding: 5px; background: red; color: white; border: none; cursor: pointer; }
         .delete-button:hover { background: darkred; }
+        
+        #submission_title {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
     </style>
 </head>
 <body>
-    <h1>Assignment Submission</h1>
-    <div class="container">
-        <div class="input-group">
-            <label for="file">Upload File:</label>
-            <input type="file" id="file">
-        </div>
-        <div class="input-group">
-            <label for="link">Or Enter a Link:</label>
-            <input type="url" id="link" placeholder="Enter assignment link">
-        </div>
-        <button class="button" onclick="submitAssignment()">Submit</button>
+    <h1>Nicholas's Assignment Submission</h1>
+    <div class="card">
+        <a href = "youtube.com" id = "submission_title"> Assingment 1</a>
     </div>
-    <div class="submissions">
-        <h3>Submitted Assignments</h3>
-        <ul id="submission-list"></ul>
-    </div>
-
-    <script>
-        const SHEET_URL = "https://script.google.com/macros/s/AKfycbwWmXpvZi2q-DDH5eEyY7JkeR43KOocOxv8l4p7QO6qxViIwUSivkTXsIsIXkVujOFphw/exec";
-
-        function submitAssignment() {
-            let fileInput = document.getElementById("file");
-            let linkInput = document.getElementById("link");
-            
-            let submission = {
-                name: "Student Name", 
-                fileUrl: fileInput.files.length > 0 ? fileInput.files[0].name : "",
-                link: linkInput.value.trim()
-            };
-
-            fetch(SHEET_URL, {
-                method: "POST",
-                body: JSON.stringify(submission),
-                headers: { "Content-Type": "application/json" }
-            }).then(() => {
-                alert("Submitted!");
-                loadSubmissions();
-            });
-        }
-
-        function loadSubmissions() {
-            fetch(SHEET_URL)
-                .then(response => response.json())
-                .then(data => {
-                    let list = document.getElementById("submission-list");
-                    list.innerHTML = "";
-                    data.forEach(item => {
-                        let listItem = document.createElement("li");
-                        let deleteButton = document.createElement("button");
-                        
-                        deleteButton.textContent = "Delete";
-                        deleteButton.className = "delete-button";
-                        deleteButton.onclick = function() {
-                            deleteSubmission(item.id);
-                        };
-                        
-                        if (item.link) {
-                            let linkElement = document.createElement("a");
-                            linkElement.href = item.link;
-                            linkElement.target = "_blank";
-                            linkElement.textContent = "🔗 " + item.link;
-                            listItem.appendChild(linkElement);
-                        } else {
-                            listItem.textContent = "📄 " + item.fileUrl;
-                        }
-                        
-                        listItem.appendChild(deleteButton);
-                        list.appendChild(listItem);
-                    });
-                });
-        }
-
-        function deleteSubmission(id) {
-            fetch(SHEET_URL + "?id=" + id, {
-                method: "DELETE"
-            }).then(() => {
-                alert("Deleted!");
-                loadSubmissions();
-            });
-        }
-
-        document.addEventListener("DOMContentLoaded", loadSubmissions);
-    </script>
 </body>
 </html>
