@@ -29,10 +29,21 @@
         position: absolute;
         padding: 10px 15px;
         background-color: #fff;
-        border: 1px solid #333;
+        border: 2px solid #333;
         border-radius: 4px;
         cursor: move;
         user-select: none;
+        text-align: center;
+      }
+      .start-node {
+        border-radius: 20px;
+        background-color: #d1f0d1;
+        border-color: #27ae60;
+      }
+      .end-node {
+        border-radius: 20px;
+        background-color: #f0d1d1;
+        border-color: #c0392b;
       }
       .controls {
         display: flex;
@@ -66,11 +77,13 @@
     </header>
 
     <div class="controls">
+      <button onclick="addNode('Start', 'start-node')">Add Start</button>
       <button onclick="addNode('Supplier')">Add Supplier</button>
       <button onclick="addNode('Warehouse')">Add Warehouse</button>
       <button onclick="addNode('Distribution')">Add Distribution</button>
       <button onclick="addNode('Retail')">Add Retail</button>
       <button onclick="addNode('Transport')">Add Transport</button>
+      <button onclick="addNode('End', 'end-node')">Add End</button>
       <button onclick="saveFlowchart()">Save</button>
       <button onclick="loadFlowchart()">Load</button>
       <button onclick="exportFlowchart()">Export as PNG</button>
@@ -87,26 +100,40 @@
       let nodeCount = 0;
       let nodes = [];
       let connections = [];
+      let connecting = null;
 
-      function addNode(type) {
+      function addNode(label, type = '') {
         const node = document.createElement('div');
-        node.className = 'node';
-        node.innerText = prompt('Label this node:', type);
+        node.className = 'node ' + type;
+        node.innerText = prompt('Label this node:', label);
         node.style.top = `${50 + nodeCount * 10}px`;
         node.style.left = `${50 + nodeCount * 10}px`;
-        node.setAttribute('draggable', true);
-
         node.id = 'node-' + nodeCount++;
         canvas.appendChild(node);
         makeDraggable(node);
 
-        node.addEventListener('dblclick', () => {
-          const target = prompt('Connect this node to (enter ID):');
-          if (document.getElementById(target)) {
-            connections.push([node.id, target]);
+        node.addEventListener('click', e => {
+          if (connecting && connecting !== node.id) {
+            connections.push([connecting, node.id]);
+            connecting = null;
             drawArrows();
           } else {
-            alert('Node not found.');
+            connecting = node.id;
+          }
+          e.stopPropagation();
+        });
+
+        node.addEventListener('contextmenu', e => {
+          e.preventDefault();
+          const action = prompt("Type 'rename' to rename or 'delete' to remove this node:");
+          if (action === 'rename') {
+            const newLabel = prompt('New label:', node.innerText);
+            if (newLabel) node.innerText = newLabel;
+          } else if (action === 'delete') {
+            canvas.removeChild(node);
+            nodes = nodes.filter(n => n !== node);
+            connections = connections.filter(c => c[0] !== node.id && c[1] !== node.id);
+            drawArrows();
           }
         });
 
@@ -135,7 +162,7 @@
         connections.forEach(([fromId, toId]) => {
           const fromEl = document.getElementById(fromId);
           const toEl = document.getElementById(toId);
-
+          if (!fromEl || !toEl) return;
           const x1 = fromEl.offsetLeft + fromEl.offsetWidth / 2;
           const y1 = fromEl.offsetTop + fromEl.offsetHeight / 2;
           const x2 = toEl.offsetLeft + toEl.offsetWidth / 2;
@@ -171,7 +198,8 @@
           id: node.id,
           label: node.innerText,
           top: node.style.top,
-          left: node.style.left
+          left: node.style.left,
+          className: node.className
         }));
         localStorage.setItem('nodes', JSON.stringify(data));
         localStorage.setItem('connections', JSON.stringify(connections));
@@ -189,7 +217,7 @@
 
         savedNodes.forEach(data => {
           const node = document.createElement('div');
-          node.className = 'node';
+          node.className = data.className;
           node.id = data.id;
           node.innerText = data.label;
           node.style.top = data.top;
@@ -197,13 +225,28 @@
           canvas.appendChild(node);
           makeDraggable(node);
 
-          node.addEventListener('dblclick', () => {
-            const target = prompt('Connect this node to (enter ID):');
-            if (document.getElementById(target)) {
-              connections.push([node.id, target]);
+          node.addEventListener('click', e => {
+            if (connecting && connecting !== node.id) {
+              connections.push([connecting, node.id]);
+              connecting = null;
               drawArrows();
             } else {
-              alert('Node not found.');
+              connecting = node.id;
+            }
+            e.stopPropagation();
+          });
+
+          node.addEventListener('contextmenu', e => {
+            e.preventDefault();
+            const action = prompt("Type 'rename' to rename or 'delete' to remove this node:");
+            if (action === 'rename') {
+              const newLabel = prompt('New label:', node.innerText);
+              if (newLabel) node.innerText = newLabel;
+            } else if (action === 'delete') {
+              canvas.removeChild(node);
+              nodes = nodes.filter(n => n !== node);
+              connections = connections.filter(c => c[0] !== node.id && c[1] !== node.id);
+              drawArrows();
             }
           });
 
