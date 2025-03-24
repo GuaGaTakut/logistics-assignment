@@ -1,11 +1,219 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <title> Assignment One</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logistics Flowchart Builder</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+      header {
+        padding: 1rem;
+        background-color: #2c3e50;
+        color: white;
+        text-align: center;
+      }
+      #canvas {
+        flex: 1;
+        background-color: #f7f7f7;
+        position: relative;
+        overflow: hidden;
+      }
+      .node {
+        position: absolute;
+        padding: 10px 15px;
+        background-color: #fff;
+        border: 1px solid #333;
+        border-radius: 4px;
+        cursor: move;
+        user-select: none;
+      }
+      .controls {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem;
+        justify-content: center;
+        background-color: #ecf0f1;
+        flex-wrap: wrap;
+      }
+      .controls button {
+        padding: 10px 20px;
+        border: none;
+        background-color: #3498db;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      svg {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+      }
+    </style>
   </head>
   <body>
-    
+    <header>
+      <h1>Logistics Flowchart Builder</h1>
+      <p>Visualize and customize logistics flow from suppliers to customers</p>
+    </header>
+
+    <div class="controls">
+      <button onclick="addNode('Supplier')">Add Supplier</button>
+      <button onclick="addNode('Warehouse')">Add Warehouse</button>
+      <button onclick="addNode('Distribution')">Add Distribution</button>
+      <button onclick="addNode('Retail')">Add Retail</button>
+      <button onclick="addNode('Transport')">Add Transport</button>
+      <button onclick="saveFlowchart()">Save</button>
+      <button onclick="loadFlowchart()">Load</button>
+      <button onclick="exportFlowchart()">Export as PNG</button>
+    </div>
+
+    <div id="canvas">
+      <svg id="arrows"></svg>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+      let canvas = document.getElementById('canvas');
+      let arrows = document.getElementById('arrows');
+      let nodeCount = 0;
+      let nodes = [];
+      let connections = [];
+
+      function addNode(type) {
+        const node = document.createElement('div');
+        node.className = 'node';
+        node.innerText = prompt('Label this node:', type);
+        node.style.top = `${50 + nodeCount * 10}px`;
+        node.style.left = `${50 + nodeCount * 10}px`;
+        node.setAttribute('draggable', true);
+
+        node.id = 'node-' + nodeCount++;
+        canvas.appendChild(node);
+        makeDraggable(node);
+
+        node.addEventListener('dblclick', () => {
+          const target = prompt('Connect this node to (enter ID):');
+          if (document.getElementById(target)) {
+            connections.push([node.id, target]);
+            drawArrows();
+          } else {
+            alert('Node not found.');
+          }
+        });
+
+        nodes.push(node);
+      }
+
+      function makeDraggable(el) {
+        let offsetX, offsetY;
+        el.onmousedown = function (e) {
+          offsetX = e.clientX - el.offsetLeft;
+          offsetY = e.clientY - el.offsetTop;
+          document.onmousemove = function (e) {
+            el.style.left = e.clientX - offsetX + 'px';
+            el.style.top = e.clientY - offsetY + 'px';
+            drawArrows();
+          };
+          document.onmouseup = function () {
+            document.onmousemove = null;
+            document.onmouseup = null;
+          };
+        };
+      }
+
+      function drawArrows() {
+        arrows.innerHTML = '';
+        connections.forEach(([fromId, toId]) => {
+          const fromEl = document.getElementById(fromId);
+          const toEl = document.getElementById(toId);
+
+          const x1 = fromEl.offsetLeft + fromEl.offsetWidth / 2;
+          const y1 = fromEl.offsetTop + fromEl.offsetHeight / 2;
+          const x2 = toEl.offsetLeft + toEl.offsetWidth / 2;
+          const y2 = toEl.offsetTop + toEl.offsetHeight / 2;
+
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', x1);
+          line.setAttribute('y1', y1);
+          line.setAttribute('x2', x2);
+          line.setAttribute('y2', y2);
+          line.setAttribute('stroke', '#2c3e50');
+          line.setAttribute('stroke-width', '2');
+          line.setAttribute('marker-end', 'url(#arrow)');
+          arrows.appendChild(line);
+        });
+
+        const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        defs.innerHTML = `<marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#2c3e50"/></marker>`;
+        arrows.appendChild(defs);
+      }
+
+      function exportFlowchart() {
+        html2canvas(canvas).then(canvasExport => {
+          const link = document.createElement('a');
+          link.download = 'logistics-flowchart.png';
+          link.href = canvasExport.toDataURL();
+          link.click();
+        });
+      }
+
+      function saveFlowchart() {
+        const data = nodes.map(node => ({
+          id: node.id,
+          label: node.innerText,
+          top: node.style.top,
+          left: node.style.left
+        }));
+        localStorage.setItem('nodes', JSON.stringify(data));
+        localStorage.setItem('connections', JSON.stringify(connections));
+        alert('Flowchart saved.');
+      }
+
+      function loadFlowchart() {
+        const savedNodes = JSON.parse(localStorage.getItem('nodes')) || [];
+        const savedConnections = JSON.parse(localStorage.getItem('connections')) || [];
+
+        canvas.innerHTML = '<svg id="arrows"></svg>';
+        arrows = document.getElementById('arrows');
+        nodes = [];
+        nodeCount = 0;
+
+        savedNodes.forEach(data => {
+          const node = document.createElement('div');
+          node.className = 'node';
+          node.id = data.id;
+          node.innerText = data.label;
+          node.style.top = data.top;
+          node.style.left = data.left;
+          canvas.appendChild(node);
+          makeDraggable(node);
+
+          node.addEventListener('dblclick', () => {
+            const target = prompt('Connect this node to (enter ID):');
+            if (document.getElementById(target)) {
+              connections.push([node.id, target]);
+              drawArrows();
+            } else {
+              alert('Node not found.');
+            }
+          });
+
+          nodes.push(node);
+          nodeCount++;
+        });
+
+        connections = savedConnections;
+        drawArrows();
+      }
+    </script>
   </body>
-  <script>
-    
-  </script>
 </html>
