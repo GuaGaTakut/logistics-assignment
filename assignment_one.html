@@ -19,6 +19,10 @@
         color: white;
         text-align: center;
       }
+      header p.instructions {
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+      }
       #canvas {
         flex: 1;
         background-color: #f7f7f7;
@@ -74,6 +78,7 @@
     <header>
       <h1>Logistics Flowchart Builder</h1>
       <p>Visualize and customize logistics flow from suppliers to customers</p>
+      <p class="instructions">Click a node, then click another to draw an arrow. Double-click a node to rename or delete it.</p>
     </header>
 
     <div class="controls">
@@ -90,13 +95,19 @@
     </div>
 
     <div id="canvas">
-      <svg id="arrows"></svg>
+      <svg id="arrows">
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L0,6 L9,3 z" fill="#2c3e50"/>
+          </marker>
+        </defs>
+      </svg>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
-      let canvas = document.getElementById('canvas');
-      let arrows = document.getElementById('arrows');
+      const canvas = document.getElementById('canvas');
+      const arrows = document.getElementById('arrows');
       let nodeCount = 0;
       let nodes = [];
       let connections = [];
@@ -123,7 +134,7 @@
           e.stopPropagation();
         });
 
-        node.addEventListener('contextmenu', e => {
+        node.addEventListener('dblclick', e => {
           e.preventDefault();
           const action = prompt("Type 'rename' to rename or 'delete' to remove this node:");
           if (action === 'rename') {
@@ -158,7 +169,7 @@
       }
 
       function drawArrows() {
-        arrows.innerHTML = '';
+        arrows.innerHTML = arrows.querySelector('defs').outerHTML;
         connections.forEach(([fromId, toId]) => {
           const fromEl = document.getElementById(fromId);
           const toEl = document.getElementById(toId);
@@ -178,10 +189,6 @@
           line.setAttribute('marker-end', 'url(#arrow)');
           arrows.appendChild(line);
         });
-
-        const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-        defs.innerHTML = `<marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#2c3e50"/></marker>`;
-        arrows.appendChild(defs);
       }
 
       function exportFlowchart() {
@@ -210,7 +217,7 @@
         const savedNodes = JSON.parse(localStorage.getItem('nodes')) || [];
         const savedConnections = JSON.parse(localStorage.getItem('connections')) || [];
 
-        canvas.innerHTML = '<svg id="arrows"></svg>';
+        canvas.innerHTML = '<svg id="arrows"><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#2c3e50"/></marker></defs></svg>';
         arrows = document.getElementById('arrows');
         nodes = [];
         nodeCount = 0;
@@ -236,7 +243,7 @@
             e.stopPropagation();
           });
 
-          node.addEventListener('contextmenu', e => {
+          node.addEventListener('dblclick', e => {
             e.preventDefault();
             const action = prompt("Type 'rename' to rename or 'delete' to remove this node:");
             if (action === 'rename') {
